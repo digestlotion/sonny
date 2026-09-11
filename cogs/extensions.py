@@ -8,10 +8,14 @@ from db import db, server, users
 from api import gui
 LOGGER = logger.Logger()
 
-STARTUP_SYNCING = False
-
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Extensions(bot=bot))
+
+    STARTUP_SYNCING = False
+    if os.path.exists(DIR / "update"):
+        STARTUP_SYNCING = True
+        if not os.path.exists(DIR / "dev"):
+            os.unlink(DIR / "update")
 
     if STARTUP_SYNCING:
         try:
