@@ -1,7 +1,7 @@
 import discord, traceback, psycopg
 from discord.ext import commands
 from modules import editing, message_embed
-from db import db
+from db import db, permission
 from utils import logger, utils
 from utils.utils import bot
 LOGGER = logger.Logger()
@@ -55,6 +55,12 @@ async def on_guild_join(guild: discord.Guild):
 
     db.insert("permissions", ("server_id", "id", "permission"), ("value",), (guild.id, 0, "#:edit_permissions", False))
     db.insert("permissions", ("server_id", "id", "permission"), ("value",), (guild.id, 0, "#:manage_extensions", False))
+    async for entry in guild.audit_logs(action=discord.AuditLogAction.bot_add, limit=5):
+        if entry.target.id != bot.user.id:
+            continue
+        user_id = entry.user.id
+        permission.set(guild.id, user_id, "#:edit_permissions", True)
+        permission.set(guild.id, user_id, "#:manage_extensions", True)
 
 @bot.event
 async def on_command_error(ctx: commands.Context, error: Exception):
