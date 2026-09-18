@@ -50,8 +50,8 @@ async def on_message_delete(message: discord.Message):
 @bot.event
 async def on_guild_join(guild: discord.Guild):
     if len(bot.guilds) == 1:
-        return
-    if (getattr(bot, "allowed_joins", 0) < 1):
+        pass
+    elif (getattr(bot, "allowed_joins", 0) < 1):
         return await guild.leave()
     setattr(bot, "allowed_joins", getattr(bot, "allowed_joins", 1)-1)
 
